@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic History | Student Portal</title>
+    
+    <!-- Load Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Load Inter Font and Custom Styles -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f4f7f9;
+        }
+        .main-content {
+            min-height: calc(100vh - 56px - 2rem);
+        }
+        .gpa-card {
+            border-radius: 0.75rem;
+            background-color: #ffffff;
+            border-left: 6px solid #198754; /* Success green highlight */
+        }
+        .gpa-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #198754; /* Success green */
+        }
+        .accordion-button {
+            font-weight: bold;
+        }
+        .accordion-item {
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Navigation Bar (Identical to previous pages for consistency) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="dashboard.html">
+                <i class="bi bi-book-half me-2"></i> Student Portal
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="course.html">Course Management</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="academic.html">Academic History</a></li>
+                    <li class="nav-item"><a class="nav-link" href="payment.html">Payment</a></li>
+                    <li class="nav-item"><a class="nav-link btn btn-outline-light btn-sm ms-lg-3" href="index.html">Log Out</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="container py-4 main-content">
+        <h2 class="mb-4 fw-light text-primary">Academic History</h2>
+        
+        <!-- 2. CGPA Summary Card (Responsive Grid) -->
+        <div class="row mb-5 g-4">
+            <!-- Overall CGPA -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow gpa-card p-4">
+                    <p class="text-muted mb-1 fw-bold text-uppercase">Cumulative GPA (CGPA)</p>
+                    <span id="overallCgpa" class="gpa-value">3.65</span>
+                    <p class="mb-0 text-success fw-bold"><small>Graded Credits: 60/120</small></p>
+                </div>
+            </div>
+            <!-- Total Credits Earned -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow gpa-card p-4" style="border-left-color: #0dcaf0;">
+                    <p class="text-muted mb-1 fw-bold text-uppercase">Total Credits Earned</p>
+                    <span id="totalCredits" class="gpa-value" style="color: #0dcaf0;">60.0</span>
+                    <p class="mb-0 text-info fw-bold"><small>Required: 120.0</small></p>
+                </div>
+            </div>
+            <!-- Current Standing -->
+            <div class="col-lg-4 col-md-12">
+                <div class="card shadow gpa-card p-4" style="border-left-color: #ffc107;">
+                    <p class="text-muted mb-1 fw-bold text-uppercase">Academic Standing</p>
+                    <span id="academicStanding" class="gpa-value" style="color: #ffc107;">Good</span>
+                    <p class="mb-0 text-warning fw-bold"><small>Probation Limit: 2.00</small></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Semester-wise Results (Accordion Structure) -->
+        <h3 class="mb-3 text-secondary">Semester Results Breakdown</h3>
+        <div class="accordion" id="academicAccordion">
+            <!-- Dynamic semester content will be loaded here -->
+        </div>
+
+        <!-- Toast Notification (for general messages) -->
+        <div id="toast" class="fixed-bottom-0 right-0 p-3" style="z-index: 11; right: 0; bottom: 0;">
+            <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-primary text-white">
+                    <strong class="me-auto">Academic Record</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="toastBody">
+                    Grades loaded successfully.
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- End of Container -->
+
+    <!-- 4. Bootstrap JS Bundle (Includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- 5. Dynamic Academic History JavaScript (js/academic.js logic placed inline) -->
+    <script>
+        // Mock data representing the student's completed academic history
+        const academicData = [
+            {
+                semester: "Fall 2024",
+                gpa: 3.80,
+                courses: [
+                    { code: 'ENG 101', name: 'Academic English', credits: 3.0, grade: 'A', gpa: 4.0 },
+                    { code: 'MAT 101', name: 'Calculus I', credits: 3.0, grade: 'A-', gpa: 3.7 },
+                    { code: 'CSE 101', name: 'Intro to CS', credits: 3.0, grade: 'B+', gpa: 3.3 },
+                    { code: 'PHY 101', name: 'Physics I', credits: 3.0, grade: 'A', gpa: 4.0 }
+                ]
+            },
+            {
+                semester: "Spring 2025",
+                gpa: 3.50,
+                courses: [
+                    { code: 'CSE 102', name: 'Data Structures', credits: 3.0, grade: 'B', gpa: 3.0 },
+                    { code: 'MAT 102', name: 'Discrete Math', credits: 3.0, grade: 'A-', gpa: 3.7 },
+                    { code: 'EEE 201', name: 'Circuit Analysis', credits: 4.0, grade: 'A', gpa: 4.0 },
+                    { code: 'HUM 205', name: 'Sociology', credits: 3.0, grade: 'B+', gpa: 3.3 }
+                ]
+            },
+            {
+                semester: "Fall 2025",
+                gpa: 3.60,
+                courses: [
+                    { code: 'CSE 210', name: 'Algorithms', credits: 3.0, grade: 'A', gpa: 4.0 },
+                    { code: 'BBA 301', name: 'Economics', credits: 3.0, grade: 'B', gpa: 3.0 },
+                    { code: 'ENG 202', name: 'Technical Writing', credits: 3.0, grade: 'A-', gpa: 3.7 }
+                ]
+            }
+        ];
+
+        // --- Utility Function to Map Grade to Color ---
+        function getGradeColor(grade) {
+            switch(grade[0]) {
+                case 'A': return 'badge bg-success';
+                case 'B': return 'badge bg-warning text-dark';
+                case 'C': return 'badge bg-info text-dark';
+                case 'D': return 'badge bg-secondary';
+                default: return 'badge bg-danger';
+            }
+        }
+
+        // --- Core Rendering Function ---
+
+        function renderAcademicHistory() {
+            const accordion = document.getElementById('academicAccordion');
+            accordion.innerHTML = '';
+            
+            academicData.forEach((semesterData, index) => {
+                const isFirst = index === 0;
+                const collapseId = `collapse${index}`;
+                const headerId = `heading${index}`;
+
+                // 1. Build the Course Table for the semester
+                let tableRows = '';
+                semesterData.courses.forEach(course => {
+                    tableRows += `
+                        <tr>
+                            <td>${course.code}</td>
+                            <td>${course.name}</td>
+                            <td>${course.credits.toFixed(1)}</td>
+                            <td><span class="${getGradeColor(course.grade)}">${course.grade}</span></td>
+                            <td>${course.gpa.toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+
+                // 2. Build the Accordion Item (Semester Card)
+                const accordionItem = `
+                    <div class="accordion-item shadow-sm">
+                        <h2 class="accordion-header" id="${headerId}">
+                            <button class="accordion-button ${isFirst ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isFirst ? 'true' : 'false'}" aria-controls="${collapseId}">
+                                ${semesterData.semester} 
+                                <span class="ms-3 badge bg-primary">Semester GPA: ${semesterData.gpa.toFixed(2)}</span>
+                            </button>
+                        </h2>
+                        <div id="${collapseId}" class="accordion-collapse collapse ${isFirst ? 'show' : ''}" aria-labelledby="${headerId}" data-bs-parent="#academicAccordion">
+                            <div class="accordion-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Code</th>
+                                                <th>Course Name</th>
+                                                <th>Credits</th>
+                                                <th>Grade</th>
+                                                <th>GPA (4.0 Scale)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${tableRows}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                accordion.insertAdjacentHTML('beforeend', accordionItem);
+            });
+        }
+        
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAcademicHistory();
+            
+            // Re-calculate and update the mock CGPA summary (for completeness)
+            let totalWeightedPoints = 0;
+            let totalCreditsAttempted = 0;
+            
+            academicData.forEach(sem => {
+                sem.courses.forEach(course => {
+                    // Simple calculation: weighted points = course.gpa * course.credits
+                    totalWeightedPoints += course.gpa * course.credits;
+                    totalCreditsAttempted += course.credits;
+                });
+            });
+
+            const calculatedCgpa = (totalWeightedPoints / totalCreditsAttempted).toFixed(2);
+            document.getElementById('overallCgpa').textContent = calculatedCgpa;
+            document.getElementById('totalCredits').textContent = totalCreditsAttempted.toFixed(1);
+            
+            if (calculatedCgpa < 3.0) {
+                 document.getElementById('academicStanding').textContent = 'Warning';
+                 document.getElementById('academicStanding').style.color = '#f97316'; // Orange
+            }
+            
+            console.log("Academic History page loaded and calculated CGPA is:", calculatedCgpa);
+        });
+    </script>
+</body>
+</html>

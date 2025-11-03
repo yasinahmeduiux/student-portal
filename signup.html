@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fc; }
+
+        /* Custom invalid/valid styling for Tailwind/Bootstrap mix */
+        /* This class is added via JavaScript upon form submission attempt */
+        .was-validated .form-control:invalid {
+            border-color: #ef4444; /* Tailwind red-500 */
+        }
+        .was-validated .form-control:valid {
+            border-color: #10b981; /* Tailwind emerald-500 */
+        }
+        .invalid-feedback, .valid-feedback {
+            display: none;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        /* Show error feedback when form is validated and control is invalid */
+        .was-validated .form-control:invalid ~ .invalid-feedback,
+        .was-validated input[type="checkbox"]:invalid ~ label + .invalid-feedback {
+            display: block;
+            color: #ef4444;
+        }
+        /* Hide native browser validation popups since we use novalidate and custom JS/CSS feedback */
+        .needs-validation:not(.was-validated) .form-control:invalid {
+            background-image: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-lg bg-white p-8 md:p-10 rounded-xl shadow-2xl">
+        <h1 class="text-3xl font-extrabold text-gray-900 text-center mb-6">Student Sign Up</h1>
+        <p class="text-center text-sm text-gray-500 mb-8">Welcome! Fill out the form to create your portal account.</p>
+
+        <form id="signupForm" class="needs-validation" novalidate>
+
+            <div class="mb-4">
+                <label for="studentId" class="block text-sm font-medium text-gray-700 mb-1">Student ID (6-20 chars, letters/numbers/hyphens)</label>
+                <input type="text" id="studentId" name="studentId"
+                       class="form-control w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                       required
+                       pattern="^[A-Za-z0-9-]{6,20}$"
+                       title="Must be 6-20 characters long, containing only letters, numbers, and hyphens.">
+                <div class="invalid-feedback">
+                    Please enter a valid Student ID (6-20 characters, alphanumeric and hyphens only).
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="department" class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                <select id="department" name="department" class="form-control w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                    <option value="" disabled selected>Select your Department</option>
+                    <option value="cse">Computer Science & Engineering</option>
+                    <option value="eee">Electrical & Electronic Engineering</option>
+                    <option value="bba">Business Administration</option>
+                    <option value="eng">English Literature</option>
+                </select>
+                <div class="invalid-feedback">
+                    Please select a valid department.
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+                <input type="email" id="email" name="email"
+                       class="form-control w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                       required
+                       title="Please enter a valid email address.">
+                <div class="invalid-feedback">
+                    Please enter a valid email address (e.g., student@university.edu).
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="mobile" class="block text-sm font-medium text-gray-700 mb-1">BD Mobile (e.g., 01712345678)</label>
+                <input type="tel" id="mobile" name="mobile"
+                       class="form-control w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                       required
+                       pattern="^01[3-9]\d{8}$"
+                       title="Mobile number must be 11 digits starting with 013-019.">
+                <div class="invalid-feedback">
+                    Please enter a valid 11-digit BD mobile number (e.g., 01712345678).
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input type="password" id="password" name="password"
+                       class="form-control w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                       required
+                       pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                       title="Must contain at least 8 characters, including 1 uppercase, 1 lowercase, 1 number, and 1 symbol (@$!%*?&).">
+                <div class="invalid-feedback">
+                    Password must be at least 8 characters and include uppercase, lowercase, number, and a symbol.
+                </div>
+                <div id="strengthMeter" class="mt-2 h-2 rounded-full bg-gray-200">
+                    <div id="strengthBar" class="h-full rounded-full transition-all duration-300" style="width: 0;"></div>
+                </div>
+                <p id="strengthText" class="text-xs mt-1 text-gray-500"></p>
+            </div>
+
+            <div class="mb-4">
+                <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword"
+                       class="form-control w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                       required>
+                <div id="confirmPasswordFeedback" class="invalid-feedback">
+                    Passwords do not match.
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex items-center">
+                    <input type="checkbox" id="terms" name="terms"
+                           class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                           required>
+                    <label for="terms" class="ml-2 block text-sm text-gray-900">
+                        I agree to the <a href="#" class="text-blue-600 hover:text-blue-800">Terms and Conditions</a>
+                    </label>
+                </div>
+                <div class="invalid-feedback text-xs mt-1">
+                    You must agree to the terms and conditions.
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-150 shadow-md">
+                Sign Up
+            </button>
+
+        </form>
+
+        <p class="text-center text-sm text-gray-500 mt-6">
+            Already have an account? <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium">Log In</a>
+        </p>
+    </div>
+
+    <div id="toast" class="fixed top-5 right-5 p-4 rounded-lg shadow-lg text-white transition-opacity duration-300 opacity-0 transform translate-y-full"
+          style="min-width: 250px; background-color: #10b981; z-index: 1000;">
+        Registration successful! Redirecting to login...
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('signupForm');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            const toast = document.getElementById('toast');
+
+            // --- 1. Submission Handler (adds .was-validated) ---
+            form.addEventListener('submit', function (event) {
+                // Check native validity AND custom password match validity
+                const passwordsMatch = checkPasswordMatch();
+                
+                if (!form.checkValidity() || !passwordsMatch) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                } else {
+                    // Successful Submission Simulation
+                    event.preventDefault();
+                    console.log('Registration data valid. Simulating registration...');
+
+                    // 1. Show success message
+                    showToast();
+                    
+                    // 2. Wait, then redirect to the Login page (index.html)
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                }
+                
+                // Add the validation class to trigger custom styling
+                form.classList.add('was-validated');
+            }, false);
+
+
+            // --- 2. Live Confirm Password Check (using setCustomValidity) ---
+            function checkPasswordMatch() {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                const feedbackDiv = document.getElementById('confirmPasswordFeedback');
+
+                if (password !== confirmPassword) {
+                    // Force the field to be invalid and set the custom error message
+                    confirmPasswordInput.setCustomValidity("Passwords do not match.");
+                    // Manually control the visibility of the feedback message
+                    if (form.classList.contains('was-validated') || confirmPassword.length > 0) {
+                         feedbackDiv.style.display = 'block';
+                    }
+                    return false;
+                } else {
+                    // Clear the custom error
+                    confirmPasswordInput.setCustomValidity(""); 
+                    // Manually hide feedback if no longer invalid
+                    feedbackDiv.style.display = 'none';
+                    return true;
+                }
+            }
+
+            // Attach validation check to input events for live feedback
+            confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+            passwordInput.addEventListener('input', checkPasswordMatch);
+
+
+            // --- 3. Live Password Strength Meter ---
+            passwordInput.addEventListener('input', function() {
+                const p = this.value;
+                let strength = 0;
+                let color = '#ef4444'; // Red (Weak)
+                let text = 'Weak';
+
+                // Scoring based on length and character types
+                if (p.length >= 8) strength += 20;
+                if (p.length >= 12) strength += 20;
+
+                if (/[a-z]/.test(p)) strength += 15;
+                if (/[A-Z]/.test(p)) strength += 15;
+                if (/\d/.test(p)) strength += 15;
+                if (/[@$!%*?&]/.test(p)) strength += 15;
+                
+                // Cap strength at 100
+                if (strength > 100) strength = 100;
+
+                if (strength > 90) { color = '#10b981'; text = 'Strong'; } // Emerald
+                else if (strength > 70) { color = '#f59e0b'; text = 'Good'; } // Amber
+                else if (strength > 40) { color = '#f97316'; text = 'Moderate'; } // Orange
+                else if (p.length === 0) {
+                     strength = 0;
+                     color = 'transparent';
+                     text = '';
+                }
+
+                // Update visual meter
+                strengthBar.style.width = strength + '%';
+                strengthBar.style.backgroundColor = color;
+                strengthText.textContent = text;
+                strengthText.style.color = color;
+            });
+
+            // --- 4. Toast Function ---
+            function showToast() {
+                toast.classList.remove('opacity-0', 'translate-y-full');
+                toast.classList.add('opacity-100', 'translate-y-0');
+            }
+        });
+    </script>
+</body>
+</html>

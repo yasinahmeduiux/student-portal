@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | Portal</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f4f7f9; /* Light gray background */
+        }
+        .sidebar-nav {
+            min-height: calc(100vh - 56px); /* Adjust height based on navbar height */
+            background-color: #ffffff;
+            border-right: 1px solid #e0e0e0;
+        }
+        .widget-card {
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--bs-primary);
+            border-radius: .5rem;
+        }
+        .widget-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        /* Custom styling for the announcement list to be scannable */
+        #announcementsList .list-group-item {
+            border-left: none;
+            border-right: none;
+            padding: 10px 15px;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="dashboard.html">
+                <i class="bi bi-book-half me-2"></i> Student Portal
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="course.html">Course Management</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="academic.html">Academic History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="payment.html">Payment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-light btn-sm ms-lg-3" href="index.html">Log Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+        <h2 class="mb-4 fw-light text-primary">Welcome Back, Student!</h2>
+        
+        <div class="row">
+
+            <div class="col-lg-8">
+                <div class="row g-4">
+                    
+                    <div class="col-md-6">
+                        <div class="card shadow-sm widget-card" style="border-left-color: #0d6efd;">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">📊 Recent Grades</h5>
+                                <p class="card-text text-muted">View your latest course scores.</p>
+                                <ul id="recentGradesList" class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Web Dev (Midterm) <span class="badge bg-success">A-</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Data Structures <span class="badge bg-warning text-dark">B+</span>
+                                    </li>
+                                    </ul>
+                                <a href="academic.html" class="btn btn-link btn-sm mt-3">View Full History &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card shadow-sm widget-card" style="border-left-color: #dc3545;">
+                            <div class="card-body">
+                                <h5 class="card-title text-danger">📝 Upcoming Assignments</h5>
+                                <p class="card-text text-muted">Deadlines you need to meet.</p>
+                                <ul id="upcomingAssignmentsList" class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        Database Project <span class="text-danger">Due: Nov 10</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        Operating Systems Quiz <span class="text-secondary">Nov 15</span>
+                                    </li>
+                                </ul>
+                                <a href="#" class="btn btn-link btn-sm mt-3">Go to Course Details &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="card shadow-sm widget-card" style="border-left-color: #ffc107;">
+                            <div class="card-body">
+                                <h5 class="card-title text-warning text-dark">⏰ Upcoming Classes</h5>
+                                <p class="card-text text-muted">Your schedule for the next 2 days.</p>
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Course</th>
+                                            <th>Room/Link</th>
+                                            <th>Instructor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="upcomingClassesTable">
+                                        <tr>
+                                            <td>09:00 AM</td>
+                                            <td>Algorithms</td>
+                                            <td>Room 301</td>
+                                            <td>Dr. Smith</td>
+                                        </tr>
+                                        <tr>
+                                            <td>11:00 AM</td>
+                                            <td>Linear Algebra</td>
+                                            <td>Online (Zoom)</td>
+                                            <td>Prof. Chen</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card shadow-sm widget-card" style="border-left-color: #198754;">
+                            <div class="card-body">
+                                <h5 class="card-title text-success">💳 Upcoming Payments</h5>
+                                <p class="card-text text-muted">Your next payment due date.</p>
+                                <ul id="upcomingPaymentsList" class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        Tuition Fee (Installment 3) 
+                                        <span class="fw-bold text-success">$500.00</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        Due Date <span class="fw-bold text-primary">Nov 30, 2025</span>
+                                    </li>
+                                </ul>
+                                <a href="payment.html" class="btn btn-success btn-sm mt-3">Make Payment</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mt-4 mt-lg-0">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white fw-bold">
+                        📢 Latest Announcements
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush" id="announcementsList">
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="fw-bold">Exam Schedule Released</div> 
+                                <small class="text-muted">Final exam dates are now available on the Academic page.</small>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="fw-bold">Course Registration Opens Dec 1</div>
+                                <small class="text-muted">Be ready to register for the Spring semester early.</small>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="fw-bold">System Maintenance Tonight</div>
+                                <small class="text-muted">Portal will be down from 11 PM to 3 AM.</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header bg-light fw-bold">
+                        🔗 Quick Actions
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="course.html" class="btn btn-outline-primary">Register for New Course</a>
+                            <a href="payment.html" class="btn btn-outline-success">View Transactions</a>
+                            <a href="academic.html" class="btn btn-outline-secondary">Check GPA</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Placeholder data to simulate a backend API response
+        const mockStudentData = {
+            grades: [
+                { course: 'AI Fundamentals', grade: 'A', type: 'Final' },
+                { course: 'Intro to Philosophy', grade: 'B', type: 'Midterm' },
+            ],
+            assignments: [
+                { name: 'OOP Design Patterns', course: 'Software Engineering', due: '2025-11-18' },
+                { name: 'History Essay', course: 'World History', due: '2025-12-05' },
+            ],
+            classes: [
+                { time: '1:00 PM', course: 'Database Systems', location: 'Lab 402', instructor: 'Dr. Jones' },
+                { time: '3:00 PM', course: 'Technical Writing', location: 'Room 211', instructor: 'Prof. Miller' },
+            ],
+            payments: [
+                { item: 'Hostel Fee', amount: '250.00', due: '2025-12-01' },
+            ],
+            announcements: [
+                { title: 'New Library Hours', detail: 'The library will extend hours starting next week.', date: '2025-11-01' },
+                { title: 'Scholarship Application Deadline', detail: 'Deadline is firm for Nov 15th.', date: '2025-10-25' },
+            ]
+        };
+
+        // --- Core Functions to Render Widgets ---
+
+        function renderRecentGrades(grades) {
+            const list = document.getElementById('recentGradesList');
+            list.innerHTML = ''; // Clear placeholders
+            grades.forEach(g => {
+                const badgeClass = g.grade.includes('A') ? 'bg-success' : 
+                                   g.grade.includes('B') ? 'bg-warning text-dark' : 'bg-danger';
+                const listItem = `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${g.course} (${g.type}) <span class="badge ${badgeClass}">${g.grade}</span>
+                    </li>
+                `;
+                list.insertAdjacentHTML('beforeend', listItem);
+            });
+        }
+
+        function renderUpcomingAssignments(assignments) {
+            const list = document.getElementById('upcomingAssignmentsList');
+            list.innerHTML = ''; // Clear placeholders
+            assignments.forEach(a => {
+                const date = new Date(a.due).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const listItem = `
+                    <li class="list-group-item d-flex justify-content-between">
+                        ${a.name} <span class="text-danger">Due: ${date}</span>
+                    </li>
+                `;
+                list.insertAdjacentHTML('beforeend', listItem);
+            });
+        }
+        
+        function renderUpcomingClasses(classes) {
+            const tableBody = document.getElementById('upcomingClassesTable');
+            tableBody.innerHTML = ''; // Clear placeholders
+            classes.forEach(c => {
+                const row = `
+                    <tr>
+                        <td>${c.time}</td>
+                        <td>${c.course}</td>
+                        <td>${c.location}</td>
+                        <td>${c.instructor}</td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        function renderAnnouncements(announcements) {
+            const list = document.getElementById('announcementsList');
+            // Keep the first few static announcements but add dynamic ones
+            announcements.forEach(a => {
+                const listItem = `
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="fw-bold">${a.title}</div>
+                        <small class="text-muted">${a.detail} (${a.date})</small>
+                    </a>
+                `;
+                list.insertAdjacentHTML('beforeend', listItem);
+            });
+        }
+        
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Simulate fetching data from a server/localStorage
+            // fetch('/api/dashboard/data')
+            // .then(res => res.json())
+            // .then(data => {
+            //     renderRecentGrades(data.grades);
+            //     renderUpcomingAssignments(data.assignments);
+            //     renderUpcomingClasses(data.classes);
+            //     renderAnnouncements(data.announcements);
+            // });
+
+            // Using mock data for frontend demonstration:
+            renderRecentGrades(mockStudentData.grades);
+            renderUpcomingAssignments(mockStudentData.assignments);
+            renderUpcomingClasses(mockStudentData.classes);
+            renderAnnouncements(mockStudentData.announcements);
+            
+            console.log("Dashboard data rendered successfully.");
+        });
+    </script>
+</body>
+</html>

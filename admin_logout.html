@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Logging Out...</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Import Inter font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f7f9fc; 
+            color: #333;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="text-center">
+        <svg class="mx-auto h-12 w-12 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        <h1 class="text-3xl font-extrabold text-gray-900 mt-4">Admin Session Ended</h1>
+        <p class="text-lg text-gray-600 mt-2">You have been securely logged out and are being redirected.</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Clearing Admin authentication status...');
+            
+            // 1. Clear the mock admin session status from the browser's local storage
+            localStorage.removeItem('admin_portal_auth');
+            
+            // 2. Redirect back to the Admin login page after a brief delay
+            setTimeout(() => {
+                window.location.href = 'admin_index.html'; // Redirects to the Admin Login page
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

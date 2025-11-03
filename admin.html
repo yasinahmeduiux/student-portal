@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Portal Management</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f4f7f9;
+        }
+        /* Layout using CSS Grid and Flexbox */
+        .admin-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 5fr; /* Sidebar (1) and Content (5) */
+            min-height: 100vh;
+        }
+        .sidebar {
+            background-color: #212529; /* Dark Bootstrap theme */
+            color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .sidebar .nav-link {
+            color: #adb5bd;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar .nav-link.active, .sidebar .nav-link:hover {
+            color: #ffffff;
+            background-color: #343a40;
+            border-left: 3px solid #0dcaf0; /* Info/Cyan highlight */
+        }
+        .main-content {
+            padding: 30px;
+        }
+        /* Mobile Adjustments (Sidebar collapse) */
+        @media (max-width: 992px) {
+            .admin-wrapper {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none; 
+            }
+            .sidebar.show {
+                display: block;
+                width: 100%;
+                position: absolute;
+                z-index: 1000;
+                min-height: 100vh;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark bg-dark d-lg-none">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#">Admin Panel</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+    
+    <div class="admin-wrapper">
+        
+        <nav id="adminSidebar" class="sidebar collapse navbar-collapse show">
+            <h5 class="text-center text-light mb-4">Portal Control</h5>
+            <ul class="nav flex-column" id="adminNavList">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-entity="dashboard">📊 Dashboard Summary</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-entity="students">👨‍🎓 Manage Students</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-entity="courses">📚 Manage Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-entity="grades">📜 Manage Grades</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-entity="announcements">📢 Post Announcements</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-entity="payments">💳 Manage Payments</a>
+                </li>
+                <li class="nav-item mt-5">
+                    <a class="nav-link text-danger logout-link" href="admin_logout.html">🚪 Admin Log Out</a>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="main-content" id="mainContentArea">
+            <h1 class="mb-4 text-primary" id="contentTitle">Admin Dashboard Summary</h1>
+            <div id="crudContainer">
+                </div>
+        </main>
+    </div>
+
+    <div class="modal fade" id="crudModal" tabindex="-1" aria-labelledby="crudModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="crudModalLabel">Manage Record</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalCrudForm">
+                    <p class="text-muted text-center">Form content loading...</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" id="crudSubmitBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // --- 🔒 AUTHENTICATION CHECK ---
+        if (localStorage.getItem('admin_portal_auth') !== 'true') {
+            alert("Access Denied: Please log in as an administrator.");
+            window.location.href = 'admin_index.html';
+        }
+        // ----------------------------------
+
+        // --- Mock Data Storage ---
+        let adminData = {
+            students: [
+                { id: 1, name: 'Alice Smith', email: 'alice@uni.edu', major: 'CSE', status: 'Active', mobile: '01712345678', studentId: 'S001' },
+                { id: 2, name: 'Bob Johnson', email: 'bob@uni.edu', major: 'BBA', status: 'Active', mobile: '01898765432', studentId: 'S002' },
+                { id: 3, name: 'Charlie Brown', email: 'charlie@uni.edu', major: 'EEE', status: 'Inactive', mobile: '01911223344', studentId: 'S003' },
+            ],
+            courses: [
+                { id: 101, code: 'CSE 401', name: 'AI Fundamentals', credits: 3, instructor: 'Dr. Jones' },
+                { id: 102, code: 'BBA 305', name: 'Marketing Strategy', credits: 3, instructor: 'Prof. Miller' },
+            ],
+            grades: [
+                { id: 501, studentId: 1, studentName: 'Alice Smith', courseCode: 'CSE 401', semester: 'Fall 2025', grade: 'A' },
+                { id: 502, studentId: 2, studentName: 'Bob Johnson', courseCode: 'BBA 305', semester: 'Fall 2025', grade: 'B+' },
+            ],
+            announcements: [
+                { id: 901, title: 'Exam Schedule Finalized', content: 'Check academic history for details.', date: '2025-10-20' },
+            ],
+            payments: [
+                { id: 701, studentId: 1, studentName: 'Alice Smith', amount: 1250, date: '2025-10-15', status: 'Completed' },
+                { id: 702, studentId: 3, studentName: 'Charlie Brown', amount: 500, date: '2025-09-01', status: 'Overdue' },
+            ]
+        };
+
+        let currentEntity = 'dashboard';
+        const contentArea = document.getElementById('crudContainer');
+        const titleElement = document.getElementById('contentTitle');
+        const crudModal = new bootstrap.Modal(document.getElementById('crudModal'));
+        const crudSubmitBtn = document.getElementById('crudSubmitBtn');
+        
+        // --- Utility Functions (omitted for brevity, assume they are correct) ---
+
+        function getNextId(entity) {
+            return adminData[entity].length > 0 ? Math.max(...adminData[entity].map(i => i.id)) + 1 : 1;
+        }
+        function getStudentOptions() {
+            return adminData.students.map(s => `<option value="${s.id}">${s.id} - ${s.name}</option>`).join('');
+        }
+        function getCourseOptions() {
+            return adminData.courses.map(c => `<option value="${c.code}">${c.code} - ${c.name}</option>`).join('');
+        }
+        // ... getTableHTML and getFormHTML functions (omitted for brevity, see previous full response) ...
+        // ... saveRecord and deleteRecord functions (omitted for brevity) ...
+
+        // --- CRUD FUNCTIONALITY (R - Read/Display) ---
+        // (Full functions included here as they are essential for the page to load)
+
+        function getTableHTML(entity) {
+            const data = adminData[entity];
+            if (!data || data.length === 0) return `<p class="alert alert-info">No ${entity} records found.</p>`;
+
+            let headers;
+            let rows = '';
+
+            // 1. STUDENTS
+            if (entity === 'students') {
+                headers = ['ID', 'Student ID', 'Name', 'Email', 'Major', 'Status', 'Actions'];
+                rows = data.map(item => `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.studentId}</td>
+                        <td>${item.name}</td>
+                        <td>${item.email}</td>
+                        <td>${item.major}</td>
+                        <td><span class="badge bg-${item.status === 'Active' ? 'success' : 'secondary'}">${item.status}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="showEditForm('${entity}', ${item.id})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteRecord('${entity}', ${item.id})">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } 
+            // 2. COURSES
+            else if (entity === 'courses') {
+                headers = ['ID', 'Code', 'Name', 'Credits', 'Instructor', 'Actions'];
+                rows = data.map(item => `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.code}</td>
+                        <td>${item.name}</td>
+                        <td>${item.credits}</td>
+                        <td>${item.instructor}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="showEditForm('${entity}', ${item.id})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteRecord('${entity}', ${item.id})">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            // 3. GRADES
+            else if (entity === 'grades') {
+                headers = ['ID', 'Student', 'Course', 'Semester', 'Grade', 'Actions'];
+                rows = data.map(item => `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.studentName}</td>
+                        <td>${item.courseCode}</td>
+                        <td>${item.semester}</td>
+                        <td><span class="badge bg-${item.grade.includes('A') ? 'success' : 'warning text-dark'}">${item.grade}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="showEditForm('${entity}', ${item.id})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteRecord('${entity}', ${item.id})">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            // 4. ANNOUNCEMENTS
+            else if (entity === 'announcements') {
+                headers = ['ID', 'Date', 'Title', 'Content Preview', 'Actions'];
+                rows = data.map(item => `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.date}</td>
+                        <td>${item.title}</td>
+                        <td>${item.content.substring(0, 50)}...</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="showEditForm('${entity}', ${item.id})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteRecord('${entity}', ${item.id})">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            // 5. PAYMENTS
+            else if (entity === 'payments') {
+                headers = ['ID', 'Student', 'Amount', 'Date', 'Status', 'Actions'];
+                rows = data.map(item => `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.studentName}</td>
+                        <td>$${item.amount.toFixed(2)}</td>
+                        <td>${item.date}</td>
+                        <td><span class="badge bg-${item.status === 'Completed' ? 'success' : 'danger'}">${item.status}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="showEditForm('${entity}', ${item.id})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteRecord('${entity}', ${item.id})">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            // Generate the full table structure
+            return `
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <input type="text" class="form-control w-25" placeholder="Search ${entity}...">
+                            <button class="btn btn-primary" onclick="showAddForm('${entity}')">Add New ${entity.slice(0, -1)}</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        ${headers.map(h => `<th>${h}</th>`).join('')}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rows}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Placeholder CRUD/Form/Logic functions (Must be included to avoid errors)
+        function getFormHTML(entity, item = {}) { return `<form>Dynamic Form for ${entity}</form>`; }
+        function showEditForm(entity, id) { alert(`Edit ${entity} ${id}`); }
+        function deleteRecord(entity, id) { 
+            if (confirm(`Confirm delete ${entity} ${id}`)) {
+                // Simplified mock delete
+                adminData[entity] = adminData[entity].filter(i => i.id !== id);
+                loadEntity(entity);
+            }
+        }
+        function showAddForm(entity) { alert(`Show Add Form for ${entity}`); }
+        function saveRecord(action) { alert(`Saving record: ${action}`); }
+
+        function loadEntity(entity) {
+            currentEntity = entity;
+            const titleMap = {
+                dashboard: 'Admin Dashboard Summary',
+                students: '👨‍🎓 Manage Student Accounts & Information (CRUD)',
+                // ... (titles)
+            };
+            titleElement.textContent = titleMap[entity] || entity;
+            
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-entity') === entity) {
+                    link.classList.add('active');
+                }
+            });
+
+            if (entity === 'dashboard') {
+                contentArea.innerHTML = getDashboardHTML();
+            } else {
+                contentArea.innerHTML = getTableHTML(entity);
+            }
+        }
+        
+        function getDashboardHTML() {
+            const totalActiveStudents = adminData.students.filter(s => s.status === 'Active').length;
+            const pendingRegistrations = adminData.students.filter(s => s.status === 'Inactive').length;
+            const overduePayments = adminData.payments.filter(p => p.status === 'Overdue').length;
+            
+            return `
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card bg-info text-white shadow">
+                            <div class="card-body"><h5 class="card-title">Total Students</h5><p class="card-text fs-2 fw-bold">${adminData.students.length}</p></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card bg-success text-white shadow">
+                            <div class="card-body"><h5 class="card-title">Active Students</h5><p class="card-text fs-2 fw-bold">${totalActiveStudents}</p></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card bg-warning text-dark shadow">
+                            <div class="card-body"><h5 class="card-title">Pending Registrations</h5><p class="card-text fs-2 fw-bold">${pendingRegistrations}</p></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card bg-danger text-white shadow">
+                            <div class="card-body"><h5 class="card-title">Overdue Payments</h5><p class="card-text fs-2 fw-bold">${overduePayments}</p></div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <h3 class="mb-3">Latest Announcements</h3>
+                <div class="card shadow">
+                    <div class="card-body">
+                        <ul id="recentActivityList" class="list-group list-group-flush">
+                            ${adminData.announcements.slice(0, 3).map(a => `<li class="list-group-item">📢 **${a.title}** posted on ${a.date}. (Preview: ${a.content.substring(0, 40)}...)</li>`).join('')}
+                        </ul>
+                        <a href="#" class="btn btn-sm btn-link mt-3" onclick="loadEntity('announcements')">View All &rarr;</a>
+                    </div>
+                </div>
+            `;
+        }
+
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Attach event listeners for internal page navigation
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                // Ensure the logout link is NOT captured by the preventDefault logic
+                if (!link.classList.contains('logout-link')) { 
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        
+                        // Close mobile sidebar on selection
+                        const bsCollapse = bootstrap.Collapse.getInstance(document.getElementById('adminSidebar'));
+                        if (bsCollapse) {
+                            const isMobileView = window.innerWidth < 992;
+                            if (isMobileView) { bsCollapse.hide(); }
+                        }
+                        
+                        const entity = e.target.getAttribute('data-entity');
+                        loadEntity(entity);
+                    });
+                }
+            });
+
+            // 2. Initial load of the dashboard
+            loadEntity('dashboard');
+        });
+    </script>
+</body>
+</html>
